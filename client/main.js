@@ -1,32 +1,42 @@
+Template.content.onCreated (function(){
+	this.frequency = new ReactiveVar(440); 	//default value
+})
+
 Template.content.onRendered(function(){
   var audioContext = new AudioContext()
   var oscillator = audioContext.createOscillator()
-  var frequency = 440; 								//default value
+  								
   var isEnabled = false;
-  var higherTone = function(){						//++
-	    frequency+=10;
-	    oscillator.frequency.value = frequency
-	    console.log(frequency);
+  var higherTone = ()=>{						//++
+	    this.frequency.set(this.frequency.get()+10);
+	
+	    
   }
-  var lowerTone = function(){						//--
-	  	frequency-=10;
-	  	oscillator.frequency.value = frequency
-	    console.log(frequency);
+  var lowerTone = ()=>{						//--
+	  	this.frequency.set(this.frequency.get()-10);
+	    
   }
+  Tracker.autorun(()=>{
+  	oscillator.frequency.value = this.frequency.get();
+  })
+
   oscillator.type = 'sine'
-  oscillator.frequency.value = frequency
-    $('#playbtn').click(function(){ 
+ 
+    $('#playbtn').click(function(event){ 
+				
       oscillator = audioContext.createOscillator()
       oscillator.connect(audioContext.destination)
       oscillator.start()
       isEnabled = true;
     });
-    $('#stopbtn').click(function(){
+    $('#stopbtn').click(function(event){
+ 	
       oscillator.stop()
       isEnabled = false;
     });
     //Submit
-    $('#submit').click(function() {
+    $('#submit').click(function(event) {
+  	
     	var currentFrqValue = $('#frq').val()
     	oscillator.frequency.value = currentFrqValue
     });
@@ -49,7 +59,7 @@ Template.content.onRendered(function(){
 	  	lowerTone();
 	  }
 	});
-	$(window).bind('mousewheel DOMMouseScroll', function(event){
+	$(window).on('mousewheel DOMMouseScroll', function(event){
 	    if (event.originalEvent.wheelDelta > 0 || event.originalEvent.detail < 0) {
 	        // scroll up
 			higherTone();
@@ -61,3 +71,16 @@ Template.content.onRendered(function(){
 	});
 	//console.log(isEnabled);
 });
+Template.content.helpers ({
+	frequency: function(){
+		var tmpl=Template.instance()
+		console.log(tmpl.frequency.get())
+		return tmpl.frequency.get();
+	}
+})
+Template.content.events({
+	'click button': function (event, tmpl){
+		//console.log(event);
+
+	}
+})

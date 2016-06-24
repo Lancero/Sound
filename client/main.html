@@ -4,7 +4,6 @@
 
 <body>
   {{> content}}
-  {{> info}}
 </body>
 
 <template name="content">
@@ -13,8 +12,6 @@
   <button id="stopbtn">Stop</button>
   <input id="frq" type="number" placeholder="frequency">
   <button id="submit">Change</button>
-</template>
-<template name="info">
   <h3>Info template</h3>
   <p>Your current frequency is: {{frequency}}</p>
 </template>
