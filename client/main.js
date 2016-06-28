@@ -12,36 +12,54 @@ Template.content.onRendered(function(){
   var lowerTone = ()=>{								//Tone down
 	  	this.frequency.set(this.frequency.get()-10);	    
   }
+  var play = function(){
+  	oscillator = audioContext.createOscillator()
+	oscillator.connect(audioContext.destination)
+	oscillator.start()
+	isEnabled = true; 
+  }
+  var stop = function(){
+	oscillator.stop()
+	isEnabled = false;
+  }
   Tracker.autorun(()=>{
   	oscillator.frequency.value = this.frequency.get();
   })
   oscillator.type = 'sine'
- 
+ //Events
     $('#playbtn').click(function(event){
-    	if (isEnabled===false){
-	      	oscillator = audioContext.createOscillator()
-      		oscillator.connect(audioContext.destination)
-      		oscillator.start()
-      		isEnabled = true;
-    	} 			
+        var x = event.x || event.clientX;
+        var y = event.y || event.clientY;
+            if (!x && !y) {
+                return false;
+			} else {
+		    	if (isEnabled===false){
+ 					play();
+    			} 
+			}			
     });
     $('#stopbtn').click(function(event){
-      oscillator.stop()
-      isEnabled = false;
+        var x = event.x || event.clientX;
+        var y = event.y || event.clientY;
+        if (!x && !y) {
+            return false;
+        } else {
+	    	stop();
+        }
     });
     //Submit
-    $('#submit').click(function(event) {
+/*    $('#submit').click(function(event) {
     	var currentFrqValue = $('#frq').val()
     	oscillator.frequency.value = currentFrqValue
-    });
+    });*/
     //Key events
     $('body').on('keydown', function(k) {
 	//Spacebar
 	  if (k.keyCode == 32) {
 	  	if (isEnabled===false) {
-	  		$('#playbtn').click();
+	  		play();	
 	  	} else {
-	  		$('#stopbtn').click();
+	  		stop();
 	  	}	    
 	  }
   	//Up arrow
@@ -67,13 +85,6 @@ Template.content.onRendered(function(){
 Template.content.helpers ({
 	frequency: function(){
 		var tmpl=Template.instance()
-		console.log(tmpl.frequency.get())
 		return tmpl.frequency.get();
 	}
 })
-/*Template.content.events({
-	'click button': function (event, tmpl){
-		//console.log(event);
-
-	}
-})*/
