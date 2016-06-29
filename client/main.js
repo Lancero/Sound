@@ -9,7 +9,7 @@ Template.content.onRendered(function(){
   var pausedFrequency;
   var maxFrequency = 15000;							//Max frequency value [Hz]
   var minFrequency = 50;							//Min frequency value [Hz]
-	var comuputationTracker;
+  var comuputationTracker;
 
   var higherTone = ()=>{							//Tone up
   	if(this.frequency.get()<maxFrequency){
@@ -26,31 +26,22 @@ Template.content.onRendered(function(){
 	oscillator.connect(audioContext.destination)
 	if (typeof pausedFrequency =='undefined') {
 		oscillator.start() 
-		console.log('default 440')
 	} else {
-		//console.log(pausedFrequency);
-
 		comuputationTracker.invalidate();
-		// this.frequency.set(pausedFrequency);
 		oscillator.start()
-		console.log(pausedFrequency)
-		console.log('else')
 	}
 	isEnabled = true;
-	console.log(this.frequency.get());
   }
   var stop = ()=>{
   	pausedFrequency = this.frequency.get();
 	oscillator.stop()
 	isEnabled = false;
-	console.log(pausedFrequency);
   }
 	comuputationTracker = Tracker.autorun(()=>{
   	oscillator.frequency.value = this.frequency.get();
   })
-
   oscillator.type = 'sine'
- //Events
+ 													//Events
     $('#playbtn').click(function(event){
         var x = event.x || event.clientX;
         var y = event.y || event.clientY;
