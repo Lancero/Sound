@@ -1,26 +1,47 @@
 Template.content.onCreated (function(){
-	this.frequency = new ReactiveVar(440); 			//default value
+	this.frequency = new ReactiveVar(440); 			//Default value [Hz]
 })
 
 Template.content.onRendered(function(){
   var audioContext = new AudioContext();
   var oscillator = audioContext.createOscillator();
   var isEnabled = false;
+  var pausedFrequency;
+  var maxFrequency = 15000;							//Max frequency value [Hz]
+  var minFrequency = 50;							//Min frequency value [Hz]
+
   var higherTone = ()=>{							//Tone up
-	    this.frequency.set(this.frequency.get()+10);		    
+  	if(this.frequency.get()<maxFrequency){
+  		this.frequency.set(this.frequency.get()+10);
+  	} 
   }
   var lowerTone = ()=>{								//Tone down
-	  	this.frequency.set(this.frequency.get()-10);	    
+  	if(this.frequency.get()>minFrequency){
+  		this.frequency.set(this.frequency.get()-10);
+  	}  		    
   }
-  var play = function(){
+  var play = ()=>{
   	oscillator = audioContext.createOscillator()
 	oscillator.connect(audioContext.destination)
-	oscillator.start()
-	isEnabled = true; 
+	if (typeof pausedFrequency =='undefined') {
+		oscillator.start() 
+		console.log('default 440')
+	} else {
+		//console.log(pausedFrequency);
+		
+		this.frequency.set(pausedFrequency);
+		oscillator.start()
+		console.log(pausedFrequency)
+		console.log('else')
+	}
+	isEnabled = true;
+	console.log(this.frequency.get());
   }
-  var stop = function(){
+  var stop = ()=>{
+  	pausedFrequency = this.frequency.get();
 	oscillator.stop()
 	isEnabled = false;
+	console.log(pausedFrequency);
   }
   Tracker.autorun(()=>{
   	oscillator.frequency.value = this.frequency.get();
@@ -48,13 +69,13 @@ Template.content.onRendered(function(){
         }
     });
     //Submit
-/*    $('#submit').click(function(event) {
+	/*    $('#submit').click(function(event) {
     	var currentFrqValue = $('#frq').val()
     	oscillator.frequency.value = currentFrqValue
     });*/
-    //Key events
+    												//Key events
     $('body').on('keydown', function(k) {
-	//Spacebar
+													//Spacebar
 	  if (k.keyCode == 32) {
 	  	if (isEnabled===false) {
 	  		play();	
@@ -62,22 +83,22 @@ Template.content.onRendered(function(){
 	  		stop();
 	  	}	    
 	  }
-  	//Up arrow
+  													//Up arrow
 	  if (k.keyCode == 38) {
 	  	higherTone();
 	  }
-  	//Down arrow
+  													//Down arrow
 	  if (k.keyCode == 40) {
 	  	lowerTone();
 	  }
 	});
 	$(window).on('mousewheel DOMMouseScroll', function(event){
 	    if (event.originalEvent.wheelDelta > 0 || event.originalEvent.detail < 0) {
-	        // scroll up
+	        										// scroll up
 			higherTone();
 	    }
 	    else {
-	        // scroll down
+	        										// scroll down
 	        lowerTone();
 	    }
 	});
